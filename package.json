@@ -4,7 +4,9 @@
   "description": "Running commits graph, powered by travis-ci",
   "main": "run.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "retag": "git tag time-machine --force",
+    "gen": "node ./run.js",
+    "travel": "git reset time-machine --hard"
   },
   "repository": {
     "type": "git",

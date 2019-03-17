@@ -8,6 +8,14 @@ const { exec } = require('shelljs');
 
 const character = require('./character').creeper;
 
+/* ---------------- User Config ---------------------*/
+
+// Reset point
+const timeMachineTag = 'time-machine';
+const githubUserName = 'liangzr';
+const githubUserEmail = 'liangzr@outlook.com';
+
+
 const COLOR = {
   NONE: 0,
   LIGHT: 1,
@@ -24,16 +32,29 @@ const level2commits = {
   4: 10,
 };
 
-// The background color that beyond the character
+// The background color that besides the character
 const BG_COLOR = COLOR.LIGHT;
 
 // First day
 const START_DATE = addDays(subYears(new Date(), 1), -1);
 
+const slientAndAsync = {
+  async: true,
+  silent: true,
+};
+
+/**
+ * Intialize git repository
+ */
 const initRepository = () => {
-  exec('git config --global user.name liangzr');
-  exec('git config --global user.email liangzr@outlook.com');
-  exec('git checkout -b commits_graph');
+  // Configure git user
+  exec(`git config --global user.name ${githubUserName}`);
+  exec(`git config --global user.email ${githubUserEmail}`);
+
+  // Travel to the past
+  exec(`git reset ${timeMachineTag} --hard`);
+
+  // Initialize keep file
   exec('touch ./fun.keep && git add ./fun.keep');
 };
 
@@ -63,7 +84,7 @@ const completeMatrix = (matrix) => {
 };
 
 /**
- * Drawing the commits graph by git commit
+ * Drawing commits graph by git commit
  * @param {} matrix pixel matrix
  */
 const draw = (matrix) => {
@@ -76,10 +97,7 @@ const draw = (matrix) => {
         fs.writeFileSync('./fun.keep', `${col}-${row}-${i}`, { flag: 'w' });
         exec(
           `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit ./fun.keep -m ${col}-${row}-${i}`,
-          {
-            async: true,
-            silent: true,
-          },
+          slientAndAsync,
         );
         logLine(`Committed: ${col}-${row}-${i}`);
       }
@@ -95,4 +113,8 @@ const matrix = completeMatrix(character);
 initRepository();
 draw(matrix);
 
-exec('git push -u origin HEAD:commits_graph --force');
+console.log('\nAll committed, wait to push...');
+
+exec('git push -u origin HEAD:master --force');
+
+console.log('\nAll done :P');

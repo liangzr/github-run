@@ -38,8 +38,8 @@ const BG_COLOR = COLOR.LIGHT;
 // First day
 const START_DATE = addDays(subYears(new Date(), 1), -1);
 
-const slientAndAsync = {
-  async: true,
+const slientAndSync = {
+  async: false,
   silent: true,
 };
 
@@ -97,7 +97,7 @@ const draw = (matrix) => {
         fs.writeFileSync('./fun.keep', `${col}-${row}-${i}`, { flag: 'w' });
         exec(
           `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit ./fun.keep -m ${col}-${row}-${i}`,
-          slientAndAsync,
+          slientAndSync,
         );
         logLine(`Committed: ${col}-${row}-${i}`);
       }

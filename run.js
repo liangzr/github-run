@@ -36,7 +36,7 @@ const level2commits = {
 const BG_COLOR = COLOR.LIGHT;
 
 // First day
-const START_DATE = addDays(subYears(new Date(), 1), -1);
+const START_DATE = subYears(new Date(), 1);
 
 const slientAndSync = {
   async: false,

@@ -1,9 +1,12 @@
 #! /usr/bin/env node
 
+const fs = require('fs');
 const subYears = require('date-fns/sub_years');
-const format = require('date-fns/format');
-const exec = require('cross-spawn').sync;
-const character = require('./character');
+const addDays = require('date-fns/add_days');
+const logLine = require('single-line-log').stdout;
+const { exec } = require('shelljs');
+
+const character = require('./character').creeper;
 
 const COLOR = {
   NONE: 0,
@@ -24,25 +27,27 @@ const level2commits = {
 // The background color that beyond the character
 const BG_COLOR = COLOR.LIGHT;
 
-const START_DATE = subYears(new Date(), 1).toISOString();
+// First day
+const START_DATE = addDays(subYears(new Date(), 1), -1);
 
-const execute = (cmdString) => {
-  const args = cmdString.split(' ');
-  const cmd = args.shift();
-  exec(cmd, args);
+const initRepository = () => {
+  exec('git config --global user.name liangzr');
+  exec('git config --global user.email liangzr@outlook.com');
+  exec('git checkout -b commits_graph');
+  exec('touch ./fun.keep && git add ./fun.keep');
 };
-
 
 /**
  * Check that the matrix is validated
  * @param {Array<Array>} matrix pixel matrix
  */
 const checkMatrix = (matrix) => {
+  console.log(matrix);
   if (
     !Array.isArray(matrix) ||
     matrix.some(subarray => !Array.isArray(subarray))
   ) {
-    throw new Error('character matrix need to be a two-dimensional array');
+    throw new Error('Character matrix need to be a two-dimensional array');
   }
 };
 
@@ -57,22 +62,37 @@ const completeMatrix = (matrix) => {
   return matrix.map(row => paddings[0].concat(row, paddings[1]));
 };
 
+/**
+ * Drawing the commits graph by git commit
+ * @param {} matrix pixel matrix
+ */
 const draw = (matrix) => {
   for (let col = 0; col <= 52; col += 1) {
     for (let row = 0; row <= 6; row += 1) {
       const level = matrix[row][col];
       const commits = level2commits[level];
       for (let i = 0; i < commits; i += 1) {
-        execute(`echo "${new Date()}" > fun.keep`);
-        execute(`GIT_AUTHOR_DATE=${START_DATE} GIT_COMMITER_DATE=${START_DATE} git commit ./fun.keep -m "${col}:${row}:${i}"`);
+        const someday = addDays(START_DATE, (col * 7) + row);
+        fs.writeFileSync('./fun.keep', `${col}-${row}-${i}`, { flag: 'w' });
+        exec(
+          `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit ./fun.keep -m ${col}-${row}-${i}`,
+          {
+            async: true,
+            silent: true,
+          },
+        );
+        logLine(`Committed: ${col}-${row}-${i}`);
       }
     }
   }
 };
 
-// checkMatrix(character);
-// const matrix = completeMatrix(character);
+// Prepare the pixel matrix
+checkMatrix(character);
+const matrix = completeMatrix(character);
 
+// Init git repository, commit and push it
+initRepository();
+draw(matrix);
 
-execute(`echo "${new Date()}" > fun.keep`);
-execute(`GIT_AUTHOR_DATE=${START_DATE} GIT_COMMITER_DATE=${START_DATE} git commit ./fun.keep -m "test"`);
+exec('git push -u origin HEAD:commits_graph --force');

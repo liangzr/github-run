@@ -10,10 +10,8 @@ const character = require('./character').creeper;
 
 /* ---------------- User Config ---------------------*/
 
-// Reset point
-const timeMachineTag = 'time-machine';
-const githubUserName = 'liangzr';
-const githubUserEmail = 'liangzr@outlook.com';
+// Graph brach
+const graphBranch = 'graph';
 
 
 const COLOR = {
@@ -38,9 +36,10 @@ const BG_COLOR = COLOR.LIGHT;
 // First day
 const START_DATE = subYears(new Date(), 1);
 
-const slientAndSync = {
+const globalConfig = {
   async: false,
   silent: true,
+  env: process.env,
 };
 
 /**
@@ -48,11 +47,13 @@ const slientAndSync = {
  */
 const initRepository = () => {
   // Configure git user
-  exec(`git config --global user.name ${githubUserName}`);
-  exec(`git config --global user.email ${githubUserEmail}`);
+  exec(`git config --global user.name ${process.env.GITHUB_USER}`);
+  exec(`git config --global user.email ${process.env.GITHUB_EMAIL}`);
 
-  // Travel to the past
-  exec(`git reset ${timeMachineTag} --hard`);
+  // Clean up & reset the graph branch
+  exec('git checkout master');
+  exec(`git branch -D ${graphBranch}`);
+  exec(`git checkout -b ${graphBranch}`);
 
   // Initialize keep file
   exec('touch ./fun.keep && git add ./fun.keep');
@@ -97,7 +98,7 @@ const draw = (matrix) => {
         fs.writeFileSync('./fun.keep', `${col}-${row}-${i}`, { flag: 'w' });
         exec(
           `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit ./fun.keep -m ${col}-${row}-${i}`,
-          slientAndSync,
+          globalConfig,
         );
         logLine(`Committed: ${col}-${row}-${i}`);
       }
@@ -115,6 +116,7 @@ draw(matrix);
 
 console.log('\nAll committed, wait to push...');
 
-exec('git push -u origin HEAD:master --force');
+exec(`git push -u origin HEAD:${graphBranch} --force`);
+exec('sh notify.sh', globalConfig);
 
 console.log('\nAll done :P');

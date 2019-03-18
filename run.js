@@ -10,7 +10,7 @@ const character = require('./character').creeper;
 
 /* ---------------- User Config ---------------------*/
 
-// Graph brach
+// Set up a default branch to commit
 const graphBranch = 'graph';
 
 
@@ -30,10 +30,10 @@ const level2commits = {
   4: 10,
 };
 
-// The background color that besides the character
+// The background color that besides the character graph
 const BG_COLOR = COLOR.LIGHT;
 
-// First day
+// Start date (first block) of the contributions graph
 const START_DATE = subYears(new Date(), 1);
 
 const globalConfig = {
@@ -43,10 +43,10 @@ const globalConfig = {
 };
 
 /**
- * Intialize git repository
+ *  Prepare the repositoy before commit character graph
  */
 const initRepository = () => {
-  // Configure git user
+  // Configure git user inside the node shell
   exec(`git config --global user.name ${process.env.GITHUB_USER}`);
   exec(`git config --global user.email ${process.env.GITHUB_EMAIL}`);
 
@@ -110,7 +110,7 @@ const draw = (matrix) => {
 checkMatrix(character);
 const matrix = completeMatrix(character);
 
-// Init git repository, commit and push it
+// Drawing graph
 initRepository();
 draw(matrix);
 

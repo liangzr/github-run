@@ -1,8 +1,13 @@
 #! /usr/bin/env node
 
 const fs = require('fs');
-const subYears = require('date-fns/sub_years');
-const addDays = require('date-fns/add_days');
+const {
+  subYears,
+  subWeeks,
+  addDays,
+  lastDayOfWeek,
+  addHours,
+} = require('date-fns');
 const logLine = require('single-line-log').stdout;
 const { exec } = require('shelljs');
 
@@ -34,7 +39,9 @@ const level2commits = {
 const BG_COLOR = COLOR.LIGHT;
 
 // Start date (first block) of the contributions graph
-const START_DATE = subYears(new Date(), 1);
+const oneYearAgo = subYears(new Date(), 1);
+const prevWeek = subWeeks(oneYearAgo, 1);
+const START_DATE = addHours(lastDayOfWeek(prevWeek, { weekStartsOn: 1 }), 12);
 
 const globalConfig = {
   async: false,

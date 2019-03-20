@@ -2,13 +2,15 @@
 
 Let your contributions graph running!
 
+![](https://ws3.sinaimg.cn/large/006tKfTcgy1g198k0szxej31ks0dwwhy.jpg)
+
 ## Setup
 
-### Step 1
+**Step 1** 
 
-Fork this repository, and clone your own `github-ren`
+Fork this repository, and clone YOUR OWN `github-run`
 
-### Step 2
+**Step 2** 
 
 Initialize dependecies by using `yarn`，and you need to install `pm2` in advance.
 
@@ -32,6 +34,8 @@ export GITHUB_DEV_TOKEN=<your personal access token>
 ```
 
 You can apply a personal access token in [here](https://github.com/settings/tokens)
+
+> Generate contributions graph didn't need one token, but the `notify.sh` script use it to force GitHub update contributions graph immediately
 
 ## Problems
 

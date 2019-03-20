@@ -1,6 +1,5 @@
 #! /usr/bin/env node
 
-const fs = require('fs');
 const {
   subYears,
   subWeeks,
@@ -61,9 +60,6 @@ const initRepository = () => {
   exec('git checkout master');
   exec(`git branch -D ${graphBranch}`);
   exec(`git checkout -b ${graphBranch}`);
-
-  // Initialize keep file
-  exec('touch ./fun.keep && git add ./fun.keep');
 };
 
 /**
@@ -102,9 +98,8 @@ const draw = (matrix) => {
       const commits = level2commits[level];
       for (let i = 0; i < commits; i += 1) {
         const someday = addDays(START_DATE, (col * 7) + row);
-        fs.writeFileSync('./fun.keep', `${col}-${row}-${i}`, { flag: 'w' });
         exec(
-          `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit ./fun.keep -m ${col}-${row}-${i}`,
+          `GIT_AUTHOR_DATE="${someday}" GIT_COMMITTER_DATE="${someday}" git commit --allow-empty -m ${col}-${row}-${i}`,
           globalConfig,
         );
         logLine(`Committed: ${col}-${row}-${i}`);

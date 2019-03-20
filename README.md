@@ -4,6 +4,12 @@ Let your contributions graph running!
 
 ## Setup
 
+### Step 1
+
+Fork this repository, and clone your own `github-ren`
+
+### Step 2
+
 Initialize dependecies by using `yarn`，and you need to install `pm2` in advance.
 
 ```sh
